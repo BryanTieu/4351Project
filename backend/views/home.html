@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <style>
+
+        body{
+
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        .signup{
+            position: absolute;
+            top: 100%;
+            left: 40%;
+            display :grid;
+                      
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+    <h1>WELCOME HOME!</h1>
+    <form method="POST" action="http://localhost:8080">
+        <div class="signup">
+
+            <input name="firstName" type="text" placeholder="First Name">
+            <input name="lastName" type="text" placeholder="Last Name">
+            <input name="phone" type="tel" placeholder="Phone">
+            <input name="email" type="email" placeholder="Email">
+            <input name="password" type="password" placeholder="Password">
+            <input name="passwordConfirm" type="password" placeholder="Confirm Password">
+            <input name="date" type="date" placeholder="Confirm Password">
+            <input name="time" type="time" >
+            
+            <button class="btn" type="submit">send</button>
+        </div>
+    </form>
+</body>
+
+</html>
