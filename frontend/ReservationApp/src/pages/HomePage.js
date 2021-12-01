@@ -7,10 +7,6 @@ import { useEffect } from "react";
 
 const HomePage = ({ id }) => {
 
-    const get = () => {
-        console.log(profilesAPI.getAll());
-    }
-
     
     return (
         <Card>
@@ -22,7 +18,7 @@ const HomePage = ({ id }) => {
                 <Button variant="contained">Make A Reservation!</Button>
             </Link>
 
-            <Button onClick={get}>fetch</Button>
+           
         </Card>
 
 
