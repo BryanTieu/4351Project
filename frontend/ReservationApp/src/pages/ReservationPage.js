@@ -17,9 +17,10 @@ const ReservationPage = () => {
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
     const [available, setAvailable] = useState();
+    const [reservationDetails, setReservationDetails] = useState();
     const [isDisabled, setIsDisabled] = useState(true);
 
-    const serverResponseForAvailability = 'true'
+    const serverResponseForAvailability = 'false'
 
     const availabilityHandler = () => {
         if (serverResponseForAvailability === 'false') {
