@@ -163,7 +163,11 @@ const LoginPage = () => {
                                     label="Same as mailing address"
                                 />
 
-                                <div><Button variant="contained" onClick={OnSignUpForAccountHandler}>Sign Up!</Button></div>
+                                <div>
+                                    <Link to={{ pathname: "/Reservation", state: { id: profile } }}>
+                                        <Button variant="contained" onClick={OnSignUpForAccountHandler}>Sign Up!</Button>
+                                    </Link>
+                                </div>
 
                             </Stack>
                         </div>
