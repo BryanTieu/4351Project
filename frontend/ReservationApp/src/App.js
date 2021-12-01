@@ -9,8 +9,9 @@ import ConfirmationPage from './pages/ConfirmationPage';
 const App = () => {
 
     return (
-        <div>
-            <Route path="/Home">
+        <Switch>
+            
+            <Route exact path="/">
                 <HomePage />
             </Route>
 
@@ -25,7 +26,8 @@ const App = () => {
             <Route path="/Confirmation">
                 <ConfirmationPage />
             </Route>
-        </div>
+
+        </Switch>
     );
 
 }

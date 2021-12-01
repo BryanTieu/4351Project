@@ -1,0 +1,49 @@
+{
+  "profiles": [
+    {
+      "id": 1,
+      "firstName": "Kenneth",
+      "lastName": "Easo",
+      "mailingAddress": "1111 MockAddress For Kenneth",
+      "billingAddress": "1111 MockAddress For Kenneth",
+      "phone": "2819665016",
+      "email": "kenneth.easo@gmail.com"
+    },
+    {
+      "id": 2,
+      "firstName": "Bryan",
+      "lastName": "Tieu",
+      "mailingAddress": "2222 MockAddress For Bryan",
+      "billingAddress": "2222 MockAddress For Bryan",
+      "phone": "7135487596",
+      "email": "bryan.tieu@gmail.com"
+    },
+    {
+      "id": 3,
+      "firstName": "Jorge",
+      "lastName": "Nimbe",
+      "mailingAddress": "3333 MockAddress For Jorge",
+      "billingAddress": "3333 MockAddress For Jorge",
+      "phone": "3468794851",
+      "email": "jorge.nimbi@gmail.com"
+    },
+    {
+      "firstName": "Kenneth",
+      "lastName": "Easo",
+      "mailingAddress": "1614 Mustang Crossing",
+      "billingAddress": "",
+      "phone": "2819665016",
+      "email": "kenneth.easo@gmail.com",
+      "id": 4
+    },
+    {
+      "firstName": "Kenneth",
+      "lastName": "Easo",
+      "mailingAddress": "1614 Mustang Crossing",
+      "billingAddress": "1614 Mustang Crossing",
+      "phone": "2819665016",
+      "email": "kenneth.easo@gmail.com",
+      "id": 5
+    }
+  ]
+}
