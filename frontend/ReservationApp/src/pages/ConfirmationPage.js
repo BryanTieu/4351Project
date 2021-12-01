@@ -1,13 +1,14 @@
 import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Button from '@mui/material/Button';
+import * as profilesAPI from '../api/signUp';
 
-const ConfirmationPage = () => {
+const ConfirmationPage = (props) => {
 
     const [cardNumber, setCardNumber] = useState('');
     const [securityCode, setSecurityCode] = useState('');
@@ -55,6 +56,7 @@ const ConfirmationPage = () => {
         setProfile(
             {
                 firstName: firstName,
+                password: password,
                 lastName: lastName,
                 mailingAddress: mailingAddress,
                 billingAddress: billingAddress,
@@ -63,6 +65,12 @@ const ConfirmationPage = () => {
             }
         )
     }
+
+    useEffect(() => {
+        if (profile !== undefined) {
+            profilesAPI.postData(profile);
+        }
+    }, [profile])
 
     const SignUpForAccountHandler = () => {
         
@@ -75,9 +83,9 @@ const ConfirmationPage = () => {
             <Box sx={{ padding: 10 }}>
                 <Card sx={{ padding: 5 }}>
                     <h1>Reservation Details</h1>
-                    <h2>Date: {reservationDetails.date} </h2>
+                    <h2>Date: {props.date} </h2>
                     <h2>Time: {reservationDetails.time} </h2>
-                    <h2>Number of Guests: {reservationDetails.numberOfGuests} </h2>
+                    <h2>Number of Guests: {props.numberOfGuests} </h2>
                 </Card>
             </Box>
             <Box sx={{ padding: 10 }}>

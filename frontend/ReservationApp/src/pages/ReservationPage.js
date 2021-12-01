@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import data from "./mock.json";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -10,16 +10,18 @@ import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
-
+import * as reservationAPI from '../api/reservationAvailability';
 const ReservationPage = () => {
 
+    const [cardNumber, setCardNumber] = useState('');
+    const [securityCode, setSecurityCode] = useState('');
     const [guestNumber, setGuestNumber] = useState(0);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
     const [available, setAvailable] = useState();
     const [reservationDetails, setReservationDetails] = useState();
     const [isDisabled, setIsDisabled] = useState(true);
-
+    const [isHighTrafficDay, setIsHighTrafficDay] = useState(false);
     const serverResponseForAvailability = 'false'
 
     const availabilityHandler = () => {
@@ -30,14 +32,42 @@ const ReservationPage = () => {
         else if (serverResponseForAvailability === 'true') {
             setAvailable(true);
         }
-        // const htd =(date.getMonth()+1).toString() + date.getDate().toString();
-        // console.log(htd);
+
+        setReservationDetails({
+            date: date,
+            numberOfGuests: guestNumber
+        })
+        const htd = (date.getMonth() + 1).toString() + ' ' + date.getDate().toString();
+        // console.log(highTrafficDays.indexOf(htd));
+        if (highTrafficDays.indexOf(htd) > 0) {
+            setIsHighTrafficDay(true);
+        }
+        else {
+            setIsHighTrafficDay(false);
+        }
+        //  console.log(htd);
     }
+
+    const highTrafficButtonHandler = () => {
+
+    }
+
+    useEffect(() => {
+        console.log(reservationDetails);
+        if (reservationDetails !== undefined) {
+            reservationAPI.postData(reservationDetails);
+        }
+    }, [reservationDetails])
 
     const highTrafficDays = [
         "1 1",
+        "2 28",
+        "3 14",
         "7 4",
-        "8 31"
+        "10 31",
+        "12 25",
+        "12 31",
+        "11 11"
     ];
 
     return (
@@ -90,6 +120,35 @@ const ReservationPage = () => {
                 </Card>
             </Box>
 
+            {isHighTrafficDay === true &&
+                <Box sx={{ padding: 10 }}>
+                    <Card sx={{ padding: 5 }}>
+
+                        <h1>This is a high traffic day. We require a credit card on file before making a reservation. There is a $10 no show fee.</h1>
+
+                        <Stack spacing={2}>
+                            <TextField
+                                id="Confirmation-Card-Number"
+                                label="Card Number"
+                                placeholder="Enter your Card Number"
+                                value={cardNumber}
+                                onChange={(e) => { setCardNumber(e.target.value) }}
+                            />
+
+                            <TextField
+                                id="Confirmation-Security-Code"
+                                label="Security Code"
+                                placeholder="Enter your Security Code"
+                                value={securityCode}
+                                onChange={(e) => { setSecurityCode(e.target.value) }}
+                            />
+
+                            <Button variant="contained" onClick={highTrafficButtonHandler}>Continue</Button>
+                        </Stack>
+                    </Card>
+                </Box>
+            }
+
             {available === false &&
 
                 <Box sx={{ padding: 10 }}>
@@ -105,6 +164,7 @@ const ReservationPage = () => {
                     </Card>
                 </Box>
             }
+
             {available === true &&
                 <Box sx={{ padding: 10 }}>
                     <Card sx={{ padding: 5 }}>
@@ -117,6 +177,12 @@ const ReservationPage = () => {
                     </Card>
                 </Box>
             }
+
+            <Link to={{ pathname: "/Confirmation", state: { date: reservationDetails?.date, numberOfGuests: reservationDetails?.numberOfGuests } }} style={{ textDecoration: 'none' }}>
+                <Button variant="contained" >
+                    Continue
+                </Button>
+            </Link>
 
 
         </div>
