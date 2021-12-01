@@ -83,32 +83,18 @@ const ConfirmationPage = (props) => {
             <Box sx={{ padding: 10 }}>
                 <Card sx={{ padding: 5 }}>
                     <h1>Reservation Details</h1>
-                    <h2>Date: {props.date} </h2>
+                    <h2>Date: {reservationDetails.date} </h2>
                     <h2>Time: {reservationDetails.time} </h2>
-                    <h2>Number of Guests: {props.numberOfGuests} </h2>
+                    <h2>Number of Guests: {reservationDetails.numberOfGuests} </h2>
                 </Card>
             </Box>
             <Box sx={{ padding: 10 }}>
                 {!confirm &&
                     <Card sx={{ padding: 5 }}>
-                        <h1>We require a credit card on file before making a reservation. There is a $10 no show fee.</h1>
+                        <h1>This information is required to make your reservation.</h1>
 
                         <Stack spacing={2}>
-                            <TextField
-                                id="Confirmation-Card-Number"
-                                label="Card Number"
-                                placeholder="Enter your Card Number"
-                                value={cardNumber}
-                                onChange={(e) => { setCardNumber(e.target.value) }}
-                            />
-
-                            <TextField
-                                id="Confirmation-Security-Code"
-                                label="Security Code"
-                                placeholder="Enter your Security Code"
-                                value={securityCode}
-                                onChange={(e) => { setSecurityCode(e.target.value) }}
-                            />
+                           
 
                             <TextField
                                 id="Confirmation-Email"

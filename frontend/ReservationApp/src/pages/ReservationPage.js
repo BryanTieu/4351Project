@@ -22,7 +22,8 @@ const ReservationPage = () => {
     const [reservationDetails, setReservationDetails] = useState();
     const [isDisabled, setIsDisabled] = useState(true);
     const [isHighTrafficDay, setIsHighTrafficDay] = useState(false);
-    const serverResponseForAvailability = 'false'
+
+    const serverResponseForAvailability = 'true'
 
     const availabilityHandler = () => {
         if (serverResponseForAvailability === 'false') {
