@@ -7,7 +7,7 @@ const session = require('express-session')
 const config = require('./config.js');
 
 
-const con = mysql.createConnection({
+const con = mysql.createPool({
     host: config.HOST,
     user: config.USER,
     password: config.PASSWORD,
@@ -29,57 +29,89 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors())
 
-// connection.query(`create table tutorials_tbl(
-//     tutorial_id INT NOT NULL AUTO_INCREMENT,
-//     tutorial_title VARCHAR(100) NOT NULL,
-//     tutorial_author VARCHAR(40) NOT NULL,
-//     submission_date DATE,
-//     PRIMARY KEY ( tutorial_id )
-//  )`)
-// .then((res)=>console.log(res))
-// .catch((err)=>console.log(err))
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-//     var sql = "DROP TABLE IF EXISTS customers";
-//   con.query(sql, function (err, result) {
+
+
+
+// ALTER TABLE paymentdetails DROP FOREIGN KEY customerID
+// ALTER TABLE reservationdetails DROP FOREIGN KEY customerID
+
+// con.query("ALTER TABLE reservationdetails DROP FOREIGN KEY id, drop id", function (err, result) {
 //     if (err) throw err;
-//     console.log("Table deleted");
+//     console.log("Table created");
 //   });
-    // var sql = `CREATE TABLE IF NOT EXISTS customers  
+
+function printtable(){
+
+    con.query("SELECT * FROM guests", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+       });
+       con.query("SELECT * FROM customers", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+       });
+       con.query("SELECT * FROM paymentdetails", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+       });
+       con.query("SELECT * FROM reservationdetails", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+       });
+
+
+
+}
+
+function droptable(name){
+
+    var sql = `DROP TABLE IF EXISTS  ${name}`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("Table deleted");
+    });
+  
+
+}
+function createtablecustomers(){
+
+
+    var sql = `CREATE TABLE IF NOT EXISTS customers  
     
-    //         (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    //          firstname VARCHAR(255) NOT NULL,
-                //password VARCHAR(255) NOT NULL,
-    //         lastName VARCHAR(255) NOT NULL,
-    //         email VARCHAR(255) NOT NULL UNIQUE,
-    //         mailAddress VARCHAR(255) NOT NULL,
-    //         billAddress VARCHAR(255) NOT NULL,
-    //         phoneNumber VARCHAR(255) NOT NULL),
-    //         earnedPoints INT DEFAULT 0`;
-    // con.query(sql, function (err, result) {
-    //   if (err) throw err;
-    //   console.log("Table created");
-    // });
+            (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+             firstname VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            lastName VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            mailAddress VARCHAR(255) NOT NULL,
+            billAddress VARCHAR(255) NOT NULL,
+            phoneNumber VARCHAR(255) NOT NULL),
+            earnedPoints INT DEFAULT 0`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("Table created");
+    });
+}
+
 
 // FOREIGN KEY (reservationID) REFERENCES cus(PersonID)
 
 
-
-//  var sql = `CREATE TABLE IF NOT EXISTS reservationdetails
-//             (id INT(4) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//             customerID INT,
-//             guestNumber INT NOT NULL,
-//             paymentID INT, 
-//             date DATE NOT NULL,
-//             time DATETIME NOT NULL,
-//             FOREIGN KEY (customerID) REFERENCES customers(id),
-//             FOREIGN KEY (paymentID) REFERENCES paymentdetails(id))`;
-//     con.query(sql, function (err, result) {
-//       if (err) throw err;
-//       console.log("Table created");
-//     });
-
+function createtablereservation(){
+ var sql = `CREATE TABLE IF NOT EXISTS reservationdetails
+            (id INT(4) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            customerID INT,
+            guestNumber INT ,
+            paymentID INT, 
+            date DATE NOT NULL,
+            time DATETIME NOT NULL,
+            FOREIGN KEY (customerID) REFERENCES customers(id),
+            FOREIGN KEY (paymentID) REFERENCES paymentdetails(id))`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("Table created");
+    });
+}
 
 //  var sql = `CREATE TABLE IF NOT EXISTS paymentdetails
 //             (id INT(4) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -105,13 +137,16 @@ con.connect(function(err) {
 //       if (err) throw err;
 //       console.log("Table created");
 //     });
+// describetable("reservationdetails")
+function describetable(table){
+    var sql = `DESCRIBE ${table}`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log(result);
+    });
 
-    // var sql = "DESCRIBE paymentdetails";
-    // con.query(sql, function (err, result) {
-    //   if (err) throw err;
-    //   console.log(result);
-    // });
-
+    
+}
 //     var sql = `INSERT INTO customers 
 // (firstName, lastName, email, mailAddress,billAdress,phoneNumber) 
 // VALUES ('Hammer','Doll','hammerd@email.com','6969 thatway st', '6969 thatway st','11111111')`;
@@ -119,16 +154,17 @@ con.connect(function(err) {
 //     if (err) throw err;
 //     console.log("1 record inserted");
 //   });
-//     con.query("SELECT * FROM guests", function (err, result, fields) {
-//         if (err) throw err;
-//         console.log(result);
-//        });
-        con.query("SHOW TABLES", function (err, result, fields) {
-            if (err) throw err;
-            console.log(result);
-        });
-    con.end();
-  });
+
+function showtable (){
+
+
+    con.query("SHOW TABLES", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+    });
+
+
+}
 
 app.get('/user/:id',cors(), async(req,res)=>{
 
@@ -202,7 +238,7 @@ app.post('/registration', cors(), async (req,res)=>{
         if (err) throw err;
         if(result.length > 0) return;            
        
-        var sql = `INSERT INTO customers (firstName,lastName,email,password,mailAddress,billAddress,phoneNumber) 
+        var sql = `INSERT INTO customers (firstname,lastName,email,password,mailAddress,billAddress,phoneNumber) 
         VALUES ('${firstName}','${lastName}','${email}','${password}','${mailAddress}','${billAddress}','${phoneNumber}')`;
         con.query(sql, function (err, result) {
             if (err) throw err;
@@ -226,6 +262,75 @@ app.get('/users',cors(), async(req,res)=>{
 
 });
 
+// table reservation routes
+
+//  var sql = `CREATE TABLE IF NOT EXISTS reservationdetails
+//             (id INT(4) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+//             customerID INT,
+//             guestNumber INT NOT NULL,
+//             paymentID INT, 
+//             date DATE NOT NULL,
+//             time DATETIME NOT NULL,
+//             FOREIGN KEY (customerID) REFERENCES customers(id),
+//             FOREIGN KEY (paymentID) REFERENCES paymentdetails(id))`;
+//     con.query(sql, function (err, result) {
+//       if (err) throw err;
+//       console.log("Table created");
+//     });
+
+
+app.post('/reservation', cors(), async(req,res)=>{
+
+    // if(!req.body) res.send("empty fields")
+    const {firstName, lastName,email, phoneNumber, cardNumber,securityCode,guestNumber,date,time } = req.body;
+
+    // var sql =`SELECT email FROM customers WHERE email='${email}'`
+           
+    // con.query(sql, function (err, result, fields) {
+    //     if (err) throw err;
+    //     if(result.length > 0) return;            
+    //    });  
+        // var sql = `INSERT INTO reservationdetails VALUES ?`;
+        // con.query(sql,req.body, function (err, result) {
+        //     if (err) throw err.message;
+        //         console.log(result + "1 record inserted");
+        //         res.send(result)
+        //     });
+
+        var sql = `INSERT INTO guests (firstname,lastName,email,phoneNumber) 
+        VALUES ('${firstName}','${lastName}','${email}','${phoneNumber}')`;
+        
+        con.query(sql, function (err, resultGuest) {
+            if (err) throw err.message;
+            console.log(resultGuest + "1  guests inserted");
+                // res.send(result)
+
+            var sql = `INSERT INTO paymentdetails (customerID,cardNumber,securityCode) 
+            VALUES ('${resultGuest.insertedId}','${cardNumber}','${securityCode}')`;
+            con.query(sql, function (err, result) {
+            if (err) throw err.message;
+            console.log(result + "1 paymentdetails inserted");
+                        // res.send(result)
+                   
+                
+                    var sql = `INSERT INTO reservationdetails (customerID,guestNumber,paymentID,date,time) 
+                    VALUES ('${resultGuest,insertedId}','${guestNumber}','${result.insertedId}','${date}','${time}')`;
+
+                    con.query(sql, function (err, result) {
+                        if (err) throw err.message;
+                            console.log(result + "1 reservationdetails inserted");
+                            res.send(result)
+                    
+                
+                    });
+                });
+
+      
+        });
+  
+    
+    
+})
 
 
 app.listen(PORT, () =>{
