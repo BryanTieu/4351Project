@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@date-io/date-fns": "^2.11.0",
     "@date-io/moment": "^2.11.0",

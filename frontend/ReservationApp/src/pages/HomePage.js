@@ -1,7 +1,7 @@
 import Card from "../components/Card";
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import * as profilesAPI from '../api/signUp';
+import * as profilesAPI from '../api/testGet';
 import { useEffect } from "react";
 
 

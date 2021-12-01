@@ -1,16 +1,15 @@
 import axios from "axios";
 
+const baseUrl = 'http://localhost:8080';
 
-const baseUrl = 'http://localhost:3500';
-
-const getAll = () => {
-    const request = axios.get(baseUrl+'/profiles')
-    return request.then(response => response.data)
+const getAll = async () => {
+    const request = await axios.get(baseUrl+'/registration')
+    return request;
 }
 
-const postData = newObject => {
-    const request = axios.post(baseUrl+'/profiles', newObject)
-    return request.then(response => response.data)
+const postData = async newObject => {
+    const request = await axios.post(baseUrl+'/registration', newObject)
+    return request;
 }
 
 export {getAll, postData}

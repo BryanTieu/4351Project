@@ -1,5 +1,5 @@
 const express = require('express');
-const cors  = require('cors')
+const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const dotenv = require('dotenv');
 const mysql = require('mysql')
@@ -7,12 +7,11 @@ const session = require('express-session')
 const config = require('./config.js');
 
 
-const con = mysql.createConnection({
-    host: config.HOST,
-    user: config.USER,
-    password: config.PASSWORD,
-    database: config.DATABASE
-
+const con = mysql.createPool({
+    host: "us-cdbr-east-04.cleardb.com",
+    user: "b8ec4c8d1b92d3",
+    password: "e62c18e0",
+    database: "heroku_e09d5c9d8b878d5"
 })
 
 const app = express();
@@ -38,29 +37,29 @@ app.use(cors())
 //  )`)
 // .then((res)=>console.log(res))
 // .catch((err)=>console.log(err))
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
+//con.connect(function(err) {
+//   if (err) throw err;
+// console.log("Connected!");
 //     var sql = "DROP TABLE IF EXISTS customers";
 //   con.query(sql, function (err, result) {
 //     if (err) throw err;
 //     console.log("Table deleted");
 //   });
-    // var sql = `CREATE TABLE IF NOT EXISTS customers  
-    
-    //         (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    //          firstname VARCHAR(255) NOT NULL,
-                //password VARCHAR(255) NOT NULL,
-    //         lastName VARCHAR(255) NOT NULL,
-    //         email VARCHAR(255) NOT NULL UNIQUE,
-    //         mailAddress VARCHAR(255) NOT NULL,
-    //         billAddress VARCHAR(255) NOT NULL,
-    //         phoneNumber VARCHAR(255) NOT NULL),
-    //         earnedPoints INT DEFAULT 0`;
-    // con.query(sql, function (err, result) {
-    //   if (err) throw err;
-    //   console.log("Table created");
-    // });
+// var sql = `CREATE TABLE IF NOT EXISTS customers  
+
+//         (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+//          firstname VARCHAR(255) NOT NULL,
+//password VARCHAR(255) NOT NULL,
+//         lastName VARCHAR(255) NOT NULL,
+//         email VARCHAR(255) NOT NULL UNIQUE,
+//         mailAddress VARCHAR(255) NOT NULL,
+//         billAddress VARCHAR(255) NOT NULL,
+//         phoneNumber VARCHAR(255) NOT NULL),
+//         earnedPoints INT DEFAULT 0`;
+// con.query(sql, function (err, result) {
+//   if (err) throw err;
+//   console.log("Table created");
+// });
 
 // FOREIGN KEY (reservationID) REFERENCES cus(PersonID)
 
@@ -95,7 +94,7 @@ con.connect(function(err) {
 //     });
 
 //  var sql = `CREATE TABLE IF NOT EXISTS guests  
-    
+
 //             (id INT(4) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 //              firstname VARCHAR(255), 
 //             lastName VARCHAR(255),
@@ -106,11 +105,11 @@ con.connect(function(err) {
 //       console.log("Table created");
 //     });
 
-    // var sql = "DESCRIBE paymentdetails";
-    // con.query(sql, function (err, result) {
-    //   if (err) throw err;
-    //   console.log(result);
-    // });
+// var sql = "DESCRIBE paymentdetails";
+// con.query(sql, function (err, result) {
+//   if (err) throw err;
+//   console.log(result);
+// });
 
 //     var sql = `INSERT INTO customers 
 // (firstName, lastName, email, mailAddress,billAdress,phoneNumber) 
@@ -123,103 +122,103 @@ con.connect(function(err) {
 //         if (err) throw err;
 //         console.log(result);
 //        });
-        con.query("SHOW TABLES", function (err, result, fields) {
-            if (err) throw err;
-            console.log(result);
-        });
-    con.end();
-  });
+con.query("SHOW TABLES", function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+});
 
-app.get('/user/:id',cors(), async(req,res)=>{
+  
+
+app.get('/user/:id', cors(), async (req, res) => {
 
     // if(req.params.id != req.session.currentUser && !req.session.authenticated) return res.send('Login first')
     con.query(`SELECT * FROM customers WHERE id ='${req.params.id}'`, function (err, result, fields) {
-        if (err)  throw err;
-           
+        if (err) throw err;
+
         res.send(result);
     });
 
 
 });
-app.put('/user/:id', cors(), async (req,res)=>{
-    
+app.put('/user/:id', cors(), async (req, res) => {
+
     // if(!req.params.id == req.session.id && req.session.authenticated) return res.send('Login first')
     // const {firstName, lastName,email,password,mailAddress,billAddress,phoneNumber} = req.body
-    var sql =`SELECT * FROM customers WHERE id='${req.params.id}'`
-    
+    var sql = `SELECT * FROM customers WHERE id='${req.params.id}'`
+
     con.query(sql, function (err, result, fields) {
         if (err) throw err;
-        if(!result.length > 0) return;            
-       
+        if (!result.length > 0) return;
+
         var sql = `UPDATE customers 
                     set ? WHERE id='${req.params.id}'`;
 
-        con.query(sql,req.body, function (err) {
+        con.query(sql, req.body, function (err) {
             if (err) throw err;
-                console.log("1 record updated");
+            console.log("1 record updated");
 
-                // res.send('received')
-                res.send(result)
-            });
-            
+            // res.send('received')
+            res.send(result)
         });
-          
+
+    });
+
 });
 
 
-app.post('/login',cors(), async(req,res) =>{
-    
-    const {email,  password} = req.body;
-    var sql =`SELECT * FROM customers WHERE email='${email}'`
+app.post('/login', cors(), async (req, res) => {
+
+    const { email, password } = req.body;
+    var sql = `SELECT * FROM customers WHERE email='${email}'`
 
     con.query(sql, function (err, result, fields) {
         if (err) throw err;
 
-        if(result.length === 0) res.send('wrong email');
-        
-        if(password === result[0].password){
+        if (result.length === 0) res.send('wrong email');
+
+        if (password === result[0].password) {
 
             req.session.authenticated = true;
             req.session.currentUser = result[0].id;
             res.send(req.session)
         }
-        
+
 
     });
 
 
 });
 
-app.post('/registration', cors(), async (req,res)=>{
+app.post('/registration', cors(), async (req, res) => {
 
-   // Input name's should be named the same as below
-    const {firstName, lastName,email,password,mailAddress,billAddress,phoneNumber} = req.body
+    // Input name's should be named the same as below
+    const { firstName, lastName, email, password, mailAddress, billAddress, phoneNumber } = req.body
 
-        
-    var sql =`SELECT email FROM customers WHERE email='${email}'`
-           
+
+    var sql = `SELECT email FROM customers WHERE email='${email}'`
+
     con.query(sql, function (err, result, fields) {
         if (err) throw err;
-        if(result.length > 0) return;            
-       
+        if (result.length > 0) return;
+
         var sql = `INSERT INTO customers (firstName,lastName,email,password,mailAddress,billAddress,phoneNumber) 
         VALUES ('${firstName}','${lastName}','${email}','${password}','${mailAddress}','${billAddress}','${phoneNumber}')`;
         con.query(sql, function (err, result) {
             if (err) throw err;
-                console.log(result + "1 record inserted");
-                res.send(result)
-            });
+            console.log(result + "1 record inserted");
+            res.send(result)
+        });
 
     });
-           
-    
-    
+
+
+
 });
-app.get('/users',cors(), async(req,res)=>{
+app.get('/users', cors(), async (req, res) => {
 
     con.query("SELECT * FROM customers", function (err, result, fields) {
         if (err) throw err;
-           
+
         res.send(result);
     });
 
@@ -228,6 +227,6 @@ app.get('/users',cors(), async(req,res)=>{
 
 
 
-app.listen(PORT, () =>{
+app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
 })

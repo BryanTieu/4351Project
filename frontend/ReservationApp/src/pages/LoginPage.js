@@ -43,19 +43,18 @@ const LoginPage = () => {
             {
                 firstName: firstName,
                 lastName: lastName,
-                mailingAddress: mailingAddress,
-                billingAddress: billingAddress,
-                phone: phoneNumber,
-                email: email
+                mailAddress: mailingAddress,
+                billAddress: billingAddress,
+                phoneNumber: phoneNumber,
+                email: email,
+                password: password
             }
         )
     }
 
     useEffect(() => {
-        console.log(profile);
         if (profile !== undefined) {
             profilesAPI.postData(profile);
-            console.log(profilesAPI.getAll());
         }
     }, [profile])
 

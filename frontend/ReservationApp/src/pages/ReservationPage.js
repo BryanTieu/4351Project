@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 
 const ReservationPage = () => {
 
-    const [guestNumber, setGuestNumber] = useState();
+    const [guestNumber, setGuestNumber] = useState(0);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
     const [available, setAvailable] = useState();
@@ -25,22 +25,19 @@ const ReservationPage = () => {
         if (serverResponseForAvailability === 'false') {
             setAvailable(false)
         }
-        
+
         else if (serverResponseForAvailability === 'true') {
             setAvailable(true);
         }
-
-       // const htd =(date.getMonth()+1).toString() + date.getDate().toString();
-       // console.log(htd);
+        // const htd =(date.getMonth()+1).toString() + date.getDate().toString();
+        // console.log(htd);
     }
 
-    
-     const highTrafficDays = [
-            "1 1",
-            "7 4",
-            "8 31"
-        ];
-    
+    const highTrafficDays = [
+        "1 1",
+        "7 4",
+        "8 31"
+    ];
 
     return (
         <div>
@@ -112,16 +109,15 @@ const ReservationPage = () => {
                     <Card sx={{ padding: 5 }}>
                         <Stack>
                             <h2>
-                                We are able to make your reservation on {date.getUTCMonth() + 1}/{date.getDate()}/{date.getFullYear()} for your party of {guestNumber} at {time.toLocaleString('en-US', { hour: 'numeric', hour12: true, minute:'numeric' })}
+                                We are able to make your reservation on {date.getUTCMonth() + 1}/{date.getDate()}/{date.getFullYear()} for your party of {guestNumber} at {time.toLocaleString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' })}
                             </h2>
-                           <Link to="/Confirmation" style={{ textDecoration: 'none' }}><Button variant="contained">Confirm!</Button> </Link>
+                            <Link to="/Confirmation" style={{ textDecoration: 'none' }}><Button variant="contained">Confirm!</Button> </Link>
                         </Stack>
                     </Card>
                 </Box>
-
             }
 
-         
+
         </div>
     );
 }
