@@ -10,7 +10,7 @@ import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
-import * as reservationAPI from '../api/reservationAvailability';
+import * as reservationAPI from '../api/axios';
 const ReservationPage = () => {
 
     const [cardNumber, setCardNumber] = useState('');
@@ -53,9 +53,10 @@ const ReservationPage = () => {
     }
 
     useEffect(() => {
-        console.log(reservationDetails);
+        // console.log(reservationDetails);
         if (reservationDetails !== undefined) {
             reservationAPI.postData(reservationDetails);
+            // reservationAPI.po
         }
     }, [reservationDetails])
 

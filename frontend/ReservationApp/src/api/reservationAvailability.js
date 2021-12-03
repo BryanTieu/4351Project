@@ -11,7 +11,7 @@ const postData =  newObject => {
     try {
         const request =  axios
         .post('http://localhost:8080/reservation', newObject)
-        .then(() => console.log('Book Created'))
+        .then((data) => console.log(data))
         .catch(err => {
           console.error(err);
         });
