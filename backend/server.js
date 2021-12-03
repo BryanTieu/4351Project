@@ -33,27 +33,50 @@ app.use(cors())
 
 
 
+
+/// Middlewares
+
+const  sendErrorMessage = (req,res,next,message) => {
+
+
+            
+            res.send({"error":"Email already taken"})
+
+
+}
+
 // printtable()
+
+const getUserProfile =  (req,res,next) => {
+
+    console.log("inside ")
+    con.query(`SELECT * FROM customers WHERE id=${req.session.currentUserId}`, function (err, result, fields) {
+        if (err) throw err;
+        res.send(result[0])
+     });
+     
+}
+
 function printtable(){
 
-    con.query("SELECT * FROM guests", function (err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-       });
+    // con.query("SELECT * FROM guests", function (err, result, fields) {
+    //     if (err) throw err;
+    //     console.log(result);
+    //    });
        con.query("SELECT * FROM customers", function (err, result, fields) {
         if (err) throw err;
         console.log(result);
        });
-       con.query("SELECT * FROM payments", function (err, result, fields) {
-        if (err) throw err;
+    //    con.query("SELECT * FROM payments", function (err, result, fields) {
+    //     if (err) throw err;
 
 
-        console.log(result);
-       });
-       con.query("SELECT * FROM reservations", function (err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-       });
+    //     console.log(result);
+    //    });
+    //    con.query("SELECT * FROM reservations", function (err, result, fields) {
+    //     if (err) throw err;
+    //     console.log(result);
+    //    });
 
 
 
@@ -155,24 +178,31 @@ function showtable (){
 }
 
 
-app.post('/registration', cors(), async (req, res) => {
+app.post('/registration', cors(), async (req, res,next) => {
 
     // Input name's should be named the same as below
+    // console.log(req.body)
     const { firstName, lastName, email, password, mailAddress, billAddress, phoneNumber } = req.body
 
 
-    var sql = `SELECT email FROM customers WHERE email='${email}'`
+    var sql = `SELECT * FROM customers WHERE email='${email}'`
 
     con.query(sql, function (err, result, fields) {
         if (err) throw err;
-        if(result.length > 0) return res.status(403).send({"error":"email already taken"});            
-       
+        console.log(result)
+        if(result.length > 0) return res.send({"error":"Email already taken"});
+               
         var sql = `INSERT INTO customers (firstname,lastName,email,password,mailAddress,billAddress,phoneNumber) 
         VALUES ('${firstName}','${lastName}','${email}','${password}','${mailAddress}','${billAddress}','${phoneNumber}')`;
-        con.query(sql, function (err, result) {
+        con.query(sql, function (err, insertedCustomer) {
             if (err) throw err;
-            console.log(result[0] + "1 record inserted");
-            res.send(result)
+
+            // const currentUser = insertedCustomer[0];
+            // req.session.currentUser = currentUser;
+            console.log(" 1 record inserted");
+            req.session.currentUserId = insertedCustomer.insertId;
+            next()
+            // res.send(insertedCustomer)
         });
 
     });
@@ -189,7 +219,7 @@ app.post('/login', cors(), async (req, res) => {
 
             if (password === result[0].password) {
 
-                req.session.currentUser = result[0].id;
+                req.session.currentUserId = result[0].id;
                 res.send(result)
             }
 
@@ -355,6 +385,8 @@ app.post('/reservation', cors(), async(req,res)=>{
     console.log(req.body )
     const {firstName, lastName,email, phoneNumber, cardNumber,securityCode,guestNumber,date,time } = req.body;
 
+    res.send(req.body)
+
 
     /*  should query the db to find an so that we know
          if the user making the reservation is registered or not.
@@ -377,7 +409,7 @@ app.post('/reservation', cors(), async(req,res)=>{
     //         res.send(result)
     //     });
 
-        var sql = `INSERT INTO guests (firstname,lastName,email,phoneNumber) 
+      /*  var sql = `INSERT INTO guests (firstname,lastName,email,phoneNumber) 
         VALUES ('${firstName}','${lastName}','${email}','${phoneNumber}')`;
         
         con.query(sql, function (err, resultGuest) {
@@ -406,13 +438,13 @@ app.post('/reservation', cors(), async(req,res)=>{
                 });
 
       
-        });
+        });*/
   
     
     
 })
 
-
+app.use(getUserProfile)
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
 })
