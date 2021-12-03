@@ -40,8 +40,7 @@ const  sendErrorMessage = (req,res,next,message) => {
 
 
             
-            res.send({"error":"Email already taken"})
-
+            res.send(serverMessage={"type":"error","message":"Email already taken"})
 
 }
 
@@ -49,11 +48,16 @@ const  sendErrorMessage = (req,res,next,message) => {
 
 const getUserProfile =  (req,res,next) => {
 
-    console.log("inside ")
-    con.query(`SELECT * FROM customers WHERE id=${req.session.currentUserId}`, function (err, result, fields) {
-        if (err) throw err;
-        res.send(result[0])
-     });
+    console.log(req.body)
+    if (req.session.currentUserId){
+
+        con.query(`SELECT * FROM customers WHERE id=${req.session.currentUserId}`, function (err, result, fields) {
+            if (err) throw err;
+            res.send(serverMessage={"type":"success","data":result[0]})
+         });
+
+    }
+    
      
 }
 
@@ -177,6 +181,31 @@ function showtable (){
 
 }
 
+app.post('/login', cors(), async(req,res)=>{
+
+    console.log(req.body)
+    const { email, password } = req.body;
+    // var sql = `SELECT * FROM customers WHERE email=${email}`
+    var sql = `SELECT * FROM customers WHERE email='${email}'`
+
+        con.query(sql, function (err, result, fields) {
+            if (err) return res.send(serverMessage={"type":"error","message":'something went wrong, try again later.'});
+
+            if (result.length === 0) return res.send(serverMessage={"type":"error","message":'Email not registered'});
+
+            if (password !== result[0].password) {
+                return res.send(serverMessage={"type":"error","message":'Wrong password'});
+                
+            }
+            
+            req.session.currentUserId = result[0].id;
+            return res.send(serverMessage={"type":"success","data":result[0]})
+
+        });
+
+    // res.send(serverMessage':'something went wrong, try again later.'});
+    
+})
 
 app.post('/registration', cors(), async (req, res,next) => {
 
@@ -188,14 +217,14 @@ app.post('/registration', cors(), async (req, res,next) => {
     var sql = `SELECT * FROM customers WHERE email='${email}'`
 
     con.query(sql, function (err, result, fields) {
-        if (err) throw err;
-        console.log(result)
-        if(result.length > 0) return res.send({"error":"Email already taken"});
+        if (err) res.send(serverMessage={"type":"error","message":'something went wrong, try again later.'});
+
+        if(result.length > 0) return res.send(serverMessage={"type":"error","message":'Email already taken.'});
                
         var sql = `INSERT INTO customers (firstname,lastName,email,password,mailAddress,billAddress,phoneNumber) 
         VALUES ('${firstName}','${lastName}','${email}','${password}','${mailAddress}','${billAddress}','${phoneNumber}')`;
         con.query(sql, function (err, insertedCustomer) {
-            if (err) throw err;
+            if (err) res.send(serverMessage={"type":"error","message":'something went wrong, try again later.'});
 
             // const currentUser = insertedCustomer[0];
             // req.session.currentUser = currentUser;
@@ -207,30 +236,8 @@ app.post('/registration', cors(), async (req, res,next) => {
 
     });
 
-app.post('/login', cors(), async (req, res) => {
+})
 
-        const { email, password } = req.body;
-        var sql = `SELECT * FROM customers WHERE email='${email}'`
-
-        con.query(sql, function (err, result, fields) {
-            if (err) throw err;
-
-            if (result.length === 0) res.send({'error':' email not registered'});
-
-            if (password === result[0].password) {
-
-                req.session.currentUserId = result[0].id;
-                res.send(result)
-            }
-
-
-        });
-
-
-    });
-
-
-});
 
 
 app.delete('/customers/:id', cors(), async (req, res) => {
@@ -247,13 +254,13 @@ app.delete('/customers/:id', cors(), async (req, res) => {
         con.query(sql, function (err, result, fields) {
             if (err) throw err;
 
-            if (result.length === 0) res.send({'error':' email not registered'});
+            if (result.length === 0) res.send(serverMessage={"type":"error","message":'Email not registered'});
 
-            if (password === result[0].password) {
+            // if (password === result[0].password) {}
 
                 req.session.currentUser = result[0].id;
-                res.send(req.session)
-            }
+                res.send(serverMessage={"type":"success","message":'Customer deleted'})
+            
 
 
         });
@@ -271,9 +278,9 @@ app.get('/guests/:id', cors(), async (req, res) => {
 
     // if(req.params.id != req.session.currentUser && !req.session.authenticated) return res.send('Login first')
     con.query(`SELECT * FROM guests WHERE id ='${req.params.id}'`, function (err, result, fields) {
-        if (err) throw err;
+        if (err) res.send(serverMessage={"type":"error","message":'something went wrong, try again later.'});
 
-        res.send(result);
+        res.send(serverMessage={"type":"success","data":result});
     });
 
 
@@ -285,9 +292,9 @@ app.get('/guests/:id', cors(), async (req, res) => {
 app.get('/guests', cors(), async (req, res) => {
 
     con.query("SELECT * FROM guests", function (err, result, fields) {
-        if (err) throw err;
+        if (err) res.send(serverMessage={"type":"error","message":'something went wrong, try again later.'});
 
-        res.send(result);
+        res.send(serverMessage={"type":"success","message":result});
     });
 
 
