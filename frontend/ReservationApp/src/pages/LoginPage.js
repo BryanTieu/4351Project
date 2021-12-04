@@ -3,12 +3,14 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link } from 'react-router-dom';
-import * as profilesAPI from '../api/signUp';
+import * as profilesAPI from '../api/axios';
 
 const LoginPage = () => {
     const [firstName, setFirstName] = useState('');
@@ -21,6 +23,7 @@ const LoginPage = () => {
     const [billingChecked, setBillingChecked] = useState(false);
     const [signUp, setSignUp] = useState();
     const [profile, setProfile] = useState();
+    const [errorMessage, setErrorMessage] = useState();
 
 
     const billingHandler = (event) => {
@@ -35,29 +38,45 @@ const LoginPage = () => {
     };
 
     const onSignUpClick = () => {
+
+
         setSignUp('true');
     }
 
-    const OnSignUpForAccountHandler = () => {
+    const OnSignUpForAccountHandler = async (e) => {
+       
+        e.preventDefault()
+       
         setProfile(
             {
-                firstName: firstName,
-                lastName: lastName,
-                mailAddress: mailingAddress,
-                billAddress: billingAddress,
-                phoneNumber: phoneNumber,
-                email: email,
-                password: password
+                firstName:firstName,
+                lastName,
+                mailAddress:mailingAddress,
+                billAdress:billingAddress,
+                phoneNumber,
+                email,
+                password
             }
-        )
-    }
+            )
+            
+            
+            const response = await profilesAPI.postData(profile,'registration');
 
-    useEffect(() => {
-        if (profile !== undefined) {
-            profilesAPI.postData(profile);
+            if(response.error){
+
+                setErrorMessage(response.error);
+                setProfile();
+               
+            }
+
+            
+
+            console.log(response)
         }
-    }, [profile])
+        
+     
 
+  
 
 
     const clear = () => {
@@ -66,8 +85,18 @@ const LoginPage = () => {
 
     return (
         <Container>
+
+            
             <Box sx={{ padding: 10 }}>
                 <Card sx={{ padding: 10 }}>
+
+
+                {errorMessage && <Alert severity="error">
+                         <AlertTitle>Error</AlertTitle>
+                                {errorMessage}
+                </Alert>}
+
+
                     <div>
                         <Button onClick={clear}>Returning Customer</Button>
                         <Button onClick={onSignUpClick}>Sign Up</Button>
