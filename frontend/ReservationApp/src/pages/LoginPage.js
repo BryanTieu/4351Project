@@ -23,7 +23,7 @@ const LoginPage = () => {
     const [billingChecked, setBillingChecked] = useState(false);
     const [signUp, setSignUp] = useState();
     const [profile, setProfile] = useState();
-    const [errorMessage, setErrorMessage] = useState();
+    const [message, setMessage] = useState();
 
 
     const billingHandler = (event) => {
@@ -62,18 +62,50 @@ const LoginPage = () => {
             
             const response = await profilesAPI.postData(profile,'registration');
 
-            if(response.error){
+            if(response.type == 'error'){
 
-                setErrorMessage(response.error);
-                setProfile();
+                setMessage({type:response.type,text:response.message});
                
+            }else{
+                setMessage({type:response.type,text:'You can login now'});
+
             }
 
             
-
             console.log(response)
-        }
+            
+    }
         
+    const OnLoginHandler = async (e) => {
+
+        e.preventDefault()
+
+            setProfile({
+                email,
+                password
+
+            })
+
+            // console.log(profile)
+         
+        const response = await profilesAPI.postData(profile,'login');
+
+        if(response.type == 'error'){
+
+            setMessage({type:response.type,text:response.message});
+           
+        }else{
+            setMessage({type:response.type,text:'Logged in'});
+
+        }
+
+        
+        console.log(response)
+       
+
+
+
+    }
      
 
   
@@ -91,9 +123,11 @@ const LoginPage = () => {
                 <Card sx={{ padding: 10 }}>
 
 
-                {errorMessage && <Alert severity="error">
-                         <AlertTitle>Error</AlertTitle>
-                                {errorMessage}
+                {message && 
+                
+                <Alert severity={message.type}>
+                         <AlertTitle>{message.type}</AlertTitle>
+                                {message.text}
                 </Alert>}
 
 
@@ -123,7 +157,7 @@ const LoginPage = () => {
                         {!signUp &&
                             <div>
                                 <Link to={{ pathname: "/Reservation", state: { id: profile?.id } }} style={{ textDecoration: 'none' }}>
-                                    <Button variant="contained" >
+                                    <Button variant="contained" onClick={OnLoginHandler}>
                                         Login!
                                     </Button>
                                 </Link>
